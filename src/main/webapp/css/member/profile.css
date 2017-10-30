@@ -1,0 +1,39 @@
+.container {
+	width: 70%;
+	margin: 0 auto;
+	padding: 20px 10px 0 10px;
+	background-color: #f8f8f8;
+	both: clear;
+}
+
+.side {
+	float: left;
+	width: 15%;
+	height: 100%;
+	padding: 0 10px;
+}
+
+.vertical-menu a {
+	color: black;
+	display: block;
+	padding: 12px;
+	text-decoration: none;
+	border-left: 1px solid #AAA;
+	border-right: 1px solid #AAA;
+}
+
+.vertical-menu a:hover {
+	background-color: #f8f8f8;
+}
+
+.vertical-menu a.active {
+	background-color: #f8f8f8;
+	color: #777;
+	border: 1px solid #AAA;
+	font-weight: bold;
+}
+
+.bar {
+	border: 1px solid #AAA;
+	background-color: #f8f8f8;
+}

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nts.cozy.dao.ReportDao">
+	<resultMap id="Report" type="com.nts.cozy.vo.Report">
+		<id property="id" column="id" javaType="int" />
+		<result property="type" column="target_type" javaType="String" />
+		<result property="targetId" column="target_id" javaType="int" />
+		<result property="nickname" column="nickname" javaType="String" />
+		<result property="comment" column="comments" javaType="String" />
+		<result property="time" column="reg_date" javaType="String" />
+		<result property="state" column="state" javaType="boolean" />
+	</resultMap>
+
+	<select id="selectReports" resultMap="Report">
+		SELECT
+			id
+			,target_type
+			,target_id
+			,nickname
+			,comments
+			,reg_date
+			,state
+		FROM 
+			report
+		ORDER BY 
+			reg_date DESC
+		LIMIT 
+			#{startReportNo}, 10;
+	</select>
+	
+	<select id="selectReportTotalCount" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM 
+			report
+	</select>
+	
+	<insert id="insertReport">
+		INSERT INTO 
+			report (target_type, target_id, nickname, comments) 
+    	VALUES 
+    		(#{type}, #{targetId}, #{nickname}, #{comment})
+	</insert>
+	
+	<delete id="deleteReport">
+    	UPDATE
+    		report
+    	SET
+    		state = 1
+    	WHERE 
+    		id = #{id};
+    </delete>
+
+</mapper>

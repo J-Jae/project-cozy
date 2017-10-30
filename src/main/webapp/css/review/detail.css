@@ -1,0 +1,14 @@
+.reviewRegisterForm {
+	width: 800px;
+	margin: auto;
+}
+
+.widthBtn {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+#reviewImage {
+	max-width: 800px;
+	margin: auto;
+}

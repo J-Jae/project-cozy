@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nts.cozy.dao.MemberDao">
+	<resultMap id="Member" type="com.nts.cozy.vo.Member">
+		<id property="memberId" column="id" javaType="int" />
+		<result property="email" column="email" javaType="String" />
+		<result property="nickname" column="nickname" javaType="String" />
+		<result property="password" column="pwd" javaType="String" />
+		<result property="sectionName" column="section_name" javaType="String" />
+		<result property="tag" column="tag" javaType="String" />
+		<result property="ipv6" column="ipv6" javaType="String" />
+		<result property="isAccountNonExpired" column="isAccountNonExpired" javaType="boolean" />
+		<result property="isAccountNonLocked" column="isAccountNonLocked" javaType="boolean" />
+		<result property="isCredentialsNonExpired" column="isCredentialsNonExpired" javaType="boolean" />
+		<result property="isEnabled" column="isEnabled" javaType="boolean" />
+	</resultMap>
+
+	<select id="selectMemberUsedLogin" resultMap="Member">
+		SELECT
+			email
+			,nickname
+			,pwd
+			,section_name
+			,ipv6
+			,isAccountNonExpired
+			,isAccountNonLocked
+			,isCredentialsNonExpired
+			,isEnabled
+		FROM 
+			member
+		WHERE 
+			email = #{email}
+	</select>
+
+	<select id="selectMember" resultMap="Member">
+		SELECT
+			email
+			,nickname
+			,section_name
+			,tag
+			,ipv6
+			,isAccountNonExpired
+			,isAccountNonLocked
+			,isCredentialsNonExpired
+		FROM 
+			member
+		WHERE 
+			isEnabled = true
+		AND 
+			email = #{email}
+	</select>
+
+	<select id="selectMemberAuthority" resultType="org.springframework.security.core.authority.SimpleGrantedAuthority">
+		SELECT 
+			authority_name
+		FROM 
+			member_authority
+		WHERE 
+			email = #{email}
+	</select>
+
+	<select id="selectMemberTag" resultType="String">
+		SELECT 
+			tag
+		FROM 
+			member
+		WHERE 
+			nickname = #{nickname}
+	</select>
+	
+	<select id="selectMemberEmail" resultType="String">
+		SELECT 
+			email
+		FROM 
+			member
+		WHERE 
+			nickname = #{nickname}
+	</select>
+
+	<insert id="insertMember">
+		INSERT INTO member (
+			email
+			,nickname
+			,pwd
+			,ipv6
+			,isAccountNonExpired
+			,isAccountNonLocked
+			,isCredentialsNonExpired
+			,isEnabled)
+		VALUES (
+			#{email}
+			,#{nickname}
+			,#{password}
+			,#{ipv6}
+			,#{isAccountNonExpired}
+			,#{isAccountNonLocked}
+			,#{isCredentialsNonExpired}
+			,#{isEnabled})
+	</insert>
+
+	<insert id="insertMemberAuthority">
+		INSERT INTO 
+			member_authority (email, authority_name)
+		VALUES
+			<foreach item="authority" index="index" collection="authorities" separator=",">
+				(#{email}, #{authority})
+			</foreach>
+	</insert>
+
+	<update id="updatePassword">
+		UPDATE 
+			member
+		SET 
+			pwd = #{password}
+		WHERE 
+			email = #{email}
+	</update>
+
+	<update id="updateMember">
+		UPDATE 
+			member
+		SET
+			section_name = #{sectionName} 
+			,tag = #{tag}
+		WHERE 
+			email = #{email}
+	</update>
+
+	<delete id="deleteMember">
+		UPDATE 
+			member
+		SET 
+			isEnabled = false
+		WHERE 
+			nickname = #{nickname}
+	</delete>
+	
+		
+	<delete id="deleteMemberAuthority">
+		DELETE
+		FROM
+			member_authority
+		WHERE 
+			email = #{email}
+	</delete>
+
+</mapper>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nts.cozy.dao.ReplyDao">
+	<resultMap id="Reply" type="com.nts.cozy.vo.Reply">
+		<id property="id" column="id" javaType="int" />
+		<result property="nickname" column="nickname" javaType="String" />
+		<result property="storeId" column="store_id" javaType="int" />
+		<result property="storeName" column="store_name" javaType="String" />
+		<result property="comment" column="reply_comment" javaType="String" />
+		<result property="time" column="reg_date" javaType="Date" />
+	</resultMap>
+
+	<select id="selectReplies" resultMap="Reply">
+		SELECT
+			id
+			,nickname
+			,store_id
+			,reply_comment
+		FROM 
+			reply
+		ORDER BY 
+			reg_date DESC
+	</select>
+
+	<select id="selectReplyByStoreId" resultMap="Reply">
+		SELECT
+			id
+			,nickname
+			,store_id
+			,reply_comment
+		FROM 
+			reply
+		WHERE 
+			store_id = #{storeId}
+		ORDER BY 
+			reg_date DESC
+	</select>
+
+	<select id="selectSomeReplyByStoreId" resultMap="Reply">
+		SELECT
+			id
+			,nickname
+			,store_id
+			,reply_comment
+		FROM 
+			reply
+		WHERE 
+			store_id = #{storeId}
+		ORDER BY 
+			reg_date DESC
+		LIMIT 
+			5
+	</select>
+
+	<select id="selectSomeReplyByStorePage" parameterType="map"
+		resultMap="Reply">
+		SELECT
+			id
+			,nickname
+			,store_id
+			,reply_comment
+			,reg_date
+		FROM 
+			reply
+		WHERE 
+			store_id = #{storeId}
+		ORDER BY 
+			reg_date DESC
+		LIMIT 
+			#{startBoardNo}, 10;
+	</select>
+
+	<select id="selectSomeReplyByNicknamePage" parameterType="map" resultMap="Reply">
+		SELECT
+			reply.id
+			,reply.nickname
+			,reply.store_id
+			,reply.reply_comment
+			,reply.reg_date
+			,store.store_name
+		FROM 
+			reply
+		INNER JOIN 
+			store
+		ON 
+			store.id = reply.store_id
+		WHERE 
+			reply.nickname = #{nickname}
+		ORDER BY 
+			reply.reg_date DESC
+		LIMIT 
+			#{startBoardNo}, 10;
+	</select>
+
+	<select id="selectReplyCountByStoreId" resultType="int">
+		SELECT
+			COUNT(*) as replyCount
+		FROM 
+			reply
+		WHERE 
+			store_id = #{storeId}
+	</select>
+
+	<select id="selectReplyCountByNickname" resultType="int">
+		SELECT
+			COUNT(*) as replyCount
+		FROM 
+			reply
+		WHERE 
+			nickname = #{nickname}
+	</select>
+
+	<select id="selectReplyByNickname" resultMap="Reply">
+		SELECT
+			id
+			,nickname
+			,store_id
+			,reply_comment
+		FROM 
+			reply
+		WHERE 
+			nickname = #{nickname}
+		ORDER BY 
+			reg_date DESC
+	</select>
+
+	<select id="selectReply" resultMap="Reply">
+		SELECT
+			id
+			,nickname
+			,reply_comment
+			,reg_date
+		FROM 
+			reply
+		WHERE 
+			id = #{replyId};
+	</select>
+
+	<insert id="insertReply">
+		INSERT INTO 
+			reply (nickname, store_id, reply_comment)
+		VALUES 
+			(#{nickname}, #{storeId}, #{comment})
+	</insert>
+
+	<delete id="deleteReply">
+		DELETE
+		FROM 
+			reply
+		where 
+			id = #{id}
+	</delete>
+</mapper>

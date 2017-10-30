@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nts.cozy.dao.MarkDao">
+	<resultMap id="Mark" type="com.nts.cozy.vo.Mark">
+		<result property="storeId" column="store_id" javaType="int" />
+		<result property="nickname" column="nickname" javaType="String" />
+		<result property="point" column="mark_point" javaType="int" />
+		<result property="registerDate" column="reg_date" javaType="java.util.Date" />
+	</resultMap>
+
+	<select id="selectMark" resultMap="Mark">
+		SELECT
+			nickname
+			,store_id
+			,mark_point
+		FROM 
+			mark
+		WHERE 
+			nickname = #{nickname}
+		AND 
+			store_id = #{storeId}
+	</select>
+
+	<select id="selectMarkByNickname" resultMap="Mark">
+		SELECT
+			nickname
+			,store_id
+			,mark_point
+		FROM 
+			mark
+		WHERE 
+			nickname = #{nickname}
+	</select>
+
+	<select id="selectAvgByStoreId" resultType="double">
+		SELECT
+			AVG(mark_point) AS avg
+		FROM 
+			mark
+		GROUP BY 
+			store_id
+		WHERE 
+			store_id = #{storeId}
+	</select>
+
+	<insert id="insertMark">
+		INSERT INTO 
+			mark (store_id, nickname, mark_point)
+		VALUES 
+			(#{storeId}, #{nickname}, #{point})
+	</insert>
+
+	<update id="updateMark">
+		UPDATE 
+			mark
+		SET 
+			mark_point = #{point}
+		WHERE 
+			nickname = #{nickname}
+		AND 
+			store_id = #{storeId}
+	</update>
+
+	<delete id="deleteMark">
+		DELETE
+		FROM 
+			mark
+		WHERE 
+			nickname = #{nickname}
+		AND 
+			store_id = #{storeId}
+	</delete>
+</mapper>

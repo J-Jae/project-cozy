@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nts.cozy.dao.FavoriteDao">
+	<select id="selectFavoriteState" resultType="com.nts.cozy.vo.Favorite">
+		SELECT
+			id
+			,nickname
+			,store_id AS storeId
+			,toggle
+		FROM 
+			favorite
+		WHERE 
+			nickname = #{nickname}
+		AND 
+			store_id = #{storeId}
+	</select>
+
+	<select id="selectFavorites" resultType="com.nts.cozy.vo.FavoriteDetail">
+		SELECT
+			favorite.id
+			,favorite.nickname
+			,favorite.store_id AS storeId
+			,favorite.toggle
+			,store.id AS storeId
+			,store.store_name AS storeName
+			,store.keyword_tag AS tag
+			,store.section_name AS section
+		FROM 
+			favorite
+		INNER JOIN 
+			store 
+		ON
+			favorite.store_id = store.id
+		WHERE 
+			favorite.nickname = #{nickname}
+	</select>
+
+	<insert id="insertFavorite">
+		INSERT INTO 
+			favorite (nickname, store_id, toggle)
+		VALUES 
+			(#{nickname}, #{storeId}, 'ON')
+	</insert>
+
+	<update id="toggleFavorite">
+		UPDATE 
+			favorite
+		SET 
+			toggle = IF(toggle='ON', 'OFF', 'ON')
+		WHERE 
+			id = #{id}
+	</update>
+
+	<delete id="deleteFavorite">
+		DELETE
+		FROM 
+			favorite
+		where 
+			id = #{id}
+	</delete>
+</mapper>

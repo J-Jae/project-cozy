@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nts.cozy.dao.ReviewDao">
+	<resultMap id="Review" type="com.nts.cozy.vo.Review">
+		<id property="reviewId" column="id" javaType="int" />
+		<result property="storeId" column="store_id" javaType="int" />
+		<result property="storeName" column="store_name" javaType="String" />
+		<result property="roadAddress" column="road_address" javaType="String" />
+		<result property="nickname" column="nickname" javaType="String" />
+		<result property="title" column="title" javaType="String" />
+		<result property="reviewContent" column="review_content" javaType="String" />
+		<result property="keywordTag" column="keyword_tag" javaType="String" />
+		<result property="reviewImagePath" column="review_image_path" javaType="String" />
+		<result property="modifiedDate" column="mod_date" javaType="String" />
+		<result property="ipv6" column="ipv6" javaType="String" />
+	</resultMap>
+    
+    <select id="selectReview" resultMap="Review">
+    	SELECT
+    		id
+    		,store_id
+    		,store_name
+    		,road_address
+    		,nickname
+    		,title
+    		,review_content
+    		,keyword_tag
+    		,review_image_path
+    		,mod_date
+    	FROM
+    		review
+    	WHERE
+    		id = #{reviewId};
+    </select>
+    
+    <select id="selectAllReviews" resultMap="Review">
+    	SELECT
+    		id
+    		,store_name
+    		,review_image_path
+    		,nickname
+    		,title
+    		,review_content
+    		,keyword_tag
+    		,mod_date
+    	FROM
+    		review   		
+    	ORDER BY 
+    		mod_date DESC
+		LIMIT 
+			#{postBeginNo}, 9;
+    </select>
+    
+    <select id="selectMyReviews" resultMap="Review">
+    	SELECT
+    		id
+    		,store_name
+    		,review_image_path
+    		,nickname
+    		,title
+    		,review_content
+    		,keyword_tag
+    		,mod_date
+    	FROM
+    		review 
+    	WHERE
+    		nickname = #{nickname} 		
+    	ORDER BY 
+    		mod_date DESC
+		LIMIT 
+			#{postBeginNo}, 9;
+    </select>
+    
+    <select id="selectReviewsByMyFavorite" resultMap="Review">
+    	SELECT
+    		id
+    		,store_name
+    		,review_image_path
+    		,nickname
+    		,title
+    		,review_content
+    		,keyword_tag
+    		,mod_date
+    	FROM
+    		review
+    	WHERE
+    		store_id IN (SELECT store_id FROM favorite WHERE nickname = #{nickname})
+    	ORDER BY 
+    		mod_date DESC
+		LIMIT 
+			#{postBeginNo}, 9;
+    </select>
+    
+    <select id="selectReviewsByMyTags" resultMap="Review">
+    	SELECT
+    		id
+    		,store_name
+    		,review_image_path
+    		,nickname
+    		,title
+    		,review_content
+    		,keyword_tag
+    		,mod_date
+    	FROM
+    		review
+    	WHERE
+    		keyword_tag REGEXP #{myTags}
+    	ORDER BY 
+    		mod_date DESC
+		LIMIT 
+			#{postBeginNo}, 9;
+    </select>
+    
+    <select id="selectReviewsByTagSearch" resultMap="Review">
+    	SELECT
+    		id
+    		,store_name
+    		,review_image_path
+    		,nickname
+    		,title
+    		,review_content
+    		,keyword_tag
+    		,mod_date
+    	FROM
+    		review
+    	WHERE
+    		keyword_tag LIKE CONCAT('%',#{tag},'%')
+    	ORDER BY 
+    		mod_date DESC
+		LIMIT 
+			#{postBeginNo}, 9;
+    </select>
+    
+    <select id="selectReviewsByMySection" resultMap="Review">
+    	SELECT
+    		revw.id
+    		,revw.store_name
+    		,revw.review_image_path
+    		,revw.nickname
+    		,revw.title
+    		,revw.review_content
+    		,revw.keyword_tag
+    		,revw.mod_date
+            ,section_name
+    	FROM
+    		review AS revw
+    	INNER JOIN
+    		store
+    	ON
+    		revw.store_id = store.id
+    	WHERE
+    		section_name = (SELECT section_name FROM member WHERE nickname = #{nickname})
+    	ORDER BY 
+    		mod_date DESC
+		LIMIT 
+			#{postBeginNo}, 9;
+    </select>
+    
+    <select id="selectReviewsByStore" resultMap="Review">
+    	SELECT
+    		revw.id
+    		,revw.store_name
+    		,revw.review_image_path
+    		,revw.nickname
+    		,revw.title
+    		,revw.review_content
+    		,revw.keyword_tag
+    		,revw.mod_date
+            ,section_name
+    	FROM
+    		review AS revw
+    	INNER JOIN
+    		store
+    	ON
+    		revw.store_id = store.id
+    	WHERE
+    		revw.store_id = #{storeId}
+    	ORDER BY 
+    		mod_date DESC
+		LIMIT 
+			#{postBeginNo}, 9;
+    </select>
+	
+	<insert id="insertReview" useGeneratedKeys="true" keyProperty="reviewId">
+		INSERT INTO 
+			review(store_id, store_name, road_address, nickname, title, review_content, keyword_tag, review_image_path, ipv6)
+		VALUES
+			(#{storeId}, #{storeName}, #{roadAddress}, #{nickname}, #{title}, #{reviewContent}, #{keywordTag}, #{reviewImagePath}, #{ipv6});
+	</insert>
+	
+	<update id="updateReviewImagePath">
+		UPDATE 
+			review
+		SET
+			review_image_path = #{reviewImagePath}
+		WHERE 
+			id = #{reviewId};
+	</update>
+	
+	<update id="updateReview">
+		UPDATE
+			review
+		SET
+			store_id = #{storeId}
+			,store_name = #{storeName}
+			,road_address = #{roadAddress}
+			,nickname = #{nickname}
+			,title = #{title}
+			,review_content = #{reviewContent}
+			,keyword_tag = #{keywordTag}
+		WHERE 
+			id = #{reviewId};
+	</update>
+	
+	<delete id="deleteReview">
+		DELETE
+		FROM 
+			review
+		WHERE 
+			id = #{reviewId};
+	</delete>
+	
+</mapper>

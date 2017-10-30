@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.nts.cozy.dao.StoreCertificationDao">
+	<resultMap id="StoreCertification" type="com.nts.cozy.vo.StoreCertification">
+		<id property="storeCertificationId" column="id" javaType="int" />
+		<result property="storeId" column="store_id" javaType="int" />
+		<result property="storeName" column="store_name" javaType="String" />
+		<result property="roadAddress" column="road_address" javaType="String" />
+		<result property="nickname" column="nickname" javaType="String" />
+		<result property="businessNo" column="biz_no" javaType="String" />
+		<result property="state" column="state" javaType="int" />
+		<result property="registeredDate" column="reg_date" javaType="String" />
+	</resultMap>	
+
+	<select id="selectMyStoreCertifications" resultMap="StoreCertification">
+		SELECT
+			id
+			,store_id
+			,store_name
+			,road_address
+			,nickname
+			,biz_no
+			,state
+			,reg_date
+		FROM
+			store_certification
+		WHERE
+			nickname = #{nickname}
+		ORDER BY
+			reg_date DESC
+		LIMIT
+			#{startCertificationNo}, 10;
+	</select>
+	
+	<select id="selectAllStoreCertifications" resultMap="StoreCertification">
+		SELECT
+			id
+			,store_id
+			,store_name
+			,road_address
+			,nickname
+			,biz_no
+			,state
+			,reg_date
+		FROM
+			store_certification
+		ORDER BY
+			reg_date DESC
+		LIMIT
+			#{startCertificationNo}, 10;
+	</select>
+	
+	<select id="selectMyStoreCertificationCount" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			store_certification
+		WHERE
+			nickname = #{nickname};
+	</select>
+	
+	<select id="selectStoreCertificationTotalCount" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			store_certification
+	</select>
+	
+	<select id="selectExistCtcertification" resultType="boolean">
+		SELECT 
+			(EXISTS 
+				(SELECT 
+					'X' 
+				FROM 
+					store_certification 
+				WHERE
+					state = 1 
+				AND
+					store_id = #{storeCertificationId}
+				)
+			);
+	</select>
+	
+	<select id="selectStoreId" resultType="int">
+		SELECT 
+			store_id
+		FROM
+			store_certification
+		WHERE
+			id = #{storeCertificationId};
+	</select>
+
+	<insert id="insertStoreCertification">
+		INSERT INTO 
+			store_certification(store_id, store_name, road_address, nickname, biz_no)
+		VALUES
+			(#{storeId}, #{storeName}, #{roadAddress}, #{nickname}, #{businessNo});
+	</insert>
+
+	<delete id="updateStoreCertification">
+		UPDATE
+			store_certification
+		SET
+			state = 1
+		WHERE
+			id = #{storeCertificationId};
+	</delete>
+	
+	<delete id="deleteStoreCertification">
+		UPDATE
+			store_certification
+		SET
+			state = -1
+		WHERE
+			id = #{storeCertificationId};
+	</delete>
+	
+	
+</mapper>

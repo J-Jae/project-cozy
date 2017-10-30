@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.nts.cozy.dao.StoreDao">
+	<resultMap id="Store" type="com.nts.cozy.vo.Store">
+		<id property="storeId" column="id" javaType="int" />
+		<result property="nickname" column="nickname" javaType="String" />
+		<result property="storeName" column="store_name" javaType="String" />
+		<result property="category" column="category" javaType="String" />
+		<result property="mainTel" column="main_tel" javaType="String" />
+		<result property="subTel" column="sub_tel" javaType="String" />
+		<result property="storeUrl" column="store_url" javaType="String" />
+		<result property="keywordTag" column="keyword_tag" javaType="String" />
+		<result property="menuTag" column="menu_tag" javaType="String" />
+		<result property="roadAddress" column="road_address" javaType="String" />
+		<result property="sectionName" column="section_name" javaType="String" />
+		<result property="coordinateX" column="coordinate_x" javaType="String" />
+		<result property="coordinateY" column="coordinate_y" javaType="String" />
+		<result property="menuImagePath" column="menu_image_path" javaType="String" />
+		<result property="coverImagePath" column="cover_image_path" javaType="String" />
+	</resultMap>
+    
+	<select id="selectStore" resultMap="Store">
+		SELECT
+			id
+			,nickname
+			,store_name
+			,category
+			,main_tel
+			,sub_tel
+			,store_url
+			,keyword_tag
+			,menu_tag
+			,road_address
+			,section_name
+			,coordinate_x
+			,coordinate_y
+			,notice
+			,state
+			,menu_image_path
+			,cover_image_path
+		FROM
+			store
+		WHERE
+			state = 1
+		AND
+			id = #{storeId};
+	</select>
+
+	<select id="selectDeletedStore" resultMap="Store">
+		SELECT
+			id
+			,nickname
+			,store_name
+			,category
+			,main_tel
+			,sub_tel
+			,store_url
+			,keyword_tag
+			,menu_tag
+			,road_address
+			,section_name
+			,coordinate_x
+			,coordinate_y
+			,notice
+			,state
+			,menu_image_path
+			,cover_image_path
+		FROM
+			store
+		WHERE
+			id = #{storeId};
+	</select>
+
+	<select id="selectSomeStore" resultMap="Store">
+		SELECT
+			store.id
+			,store.nickname
+			,store.store_name
+			,store.category
+			,store.main_tel
+			,store.sub_tel
+			,store.store_url
+			,store.keyword_tag
+			,store.menu_tag
+			,store.road_address
+			,store.section_name
+			,store.coordinate_x
+			,store.coordinate_y
+			,store.notice
+			,store.state
+			,store.menu_image_path
+			,store.cover_image_path
+			,AVG(mark.mark_point) AS rate
+		FROM
+			store
+			<choose>
+	    		<when test="type == 'favorite'">
+	      			INNER join favorite ON store.id = favorite.store_id
+	    		</when>
+	    		<when test="type == 'tag'">
+	     	 		INNER JOIN member
+	    		</when>
+	    		<when test="type == 'section'">
+	    			INNER JOIN member ON store.section_name = member.section_name
+	    		</when>
+	  		</choose>
+		LEFT JOIN 
+			mark 
+		ON 
+			mark.store_id = store.id
+		WHERE
+			store.state = 1
+			<choose>
+	    		<when test="type == 'favorite'">
+	      		AND favorite.nickname = #{nickname}
+				AND favorite.toggle LIKE 'ON'
+	    		</when>
+	    		<when test="type == 'tag'">
+	    	  	AND member.nickname = #{nickname}
+	    	  	AND store.keyword_tag REGEXP #{tag}
+	    		</when>
+	    		<when test="type == 'section'">
+	     	 	AND member.nickname = #{nickname}
+	    		</when>
+  			</choose>
+		GROUP BY 
+			store.id
+		<if test="order == 'Latest'">
+    		ORDER BY 
+    			store.mod_date DESC
+  		</if>
+  		<if test="order == 'Rating'">
+    		ORDER BY 
+    			rate DESC
+  		</if>
+		LIMIT 
+			#{postNo}, 9;
+	</select>
+		
+	<select id="selectExistedStore" resultType="Integer">
+		SELECT 
+			id
+		FROM 
+			store 
+		WHERE 
+			state = 1 
+		AND
+			road_address = #{roadAddress}
+		AND 
+			store_name = #{storeName};
+	</select>
+	
+	<select id="selectStoreDuplication" resultType="boolean">
+		SELECT 
+			(EXISTS 
+				(SELECT 
+					'X' 
+				FROM 
+					store 
+				WHERE
+					state = 1 
+				AND
+					road_address = #{roadAddress}
+				AND 
+					store_name = #{storeName}
+				)
+			);
+	</select>
+		
+	<select id="getStoreCount" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			store
+		WHERE
+			state = 1
+	</select>
+
+	<insert id="insertStore" useGeneratedKeys="true" keyProperty="storeId">
+		INSERT INTO 
+			store(nickname, store_name, category, main_tel, sub_tel, store_url, keyword_tag, menu_tag, road_address, section_name, coordinate_x, coordinate_y)
+		VALUES
+			(#{nickname}, #{storeName}, #{category}, #{mainTel}, #{subTel}, #{storeUrl}, #{keywordTag}, #{menuTag}, #{roadAddress}, #{sectionName}, #{coordinateX}, #{coordinateY});
+	</insert>
+	
+	<delete id="deleteStore">
+		UPDATE 
+			store
+		SET
+			state = 0
+		WHERE 
+			id = #{storeId};
+	</delete>
+	
+	<update id="updateStore">
+		UPDATE 
+			store
+		SET
+			nickname = #{nickname}
+			, store_name = #{storeName}
+			, category = #{category}
+			, main_tel = #{mainTel}
+			, sub_tel = #{subTel}
+			, store_url = #{storeUrl}
+			, keyword_tag = #{keywordTag}
+			, menu_tag = #{menuTag}
+			, road_address = #{roadAddress}
+			, section_name = #{sectionName}
+			, coordinate_x = #{coordinateX}
+			, coordinate_y = #{coordinateY}
+		WHERE 
+			id = #{storeId};
+	</update>
+	
+	<update id="updateStoreHost">
+		UPDATE 
+			store
+		SET
+			nickname = #{nickname}
+		WHERE 
+			id = #{storeId}
+	</update>
+	
+	<update id="updateStoreImagePath">
+		UPDATE 
+			store
+		SET
+			menu_image_path = #{menuImagePath}
+			, cover_image_path = #{coverImagePath}
+		WHERE 
+			id = #{storeId}
+	</update>
+	
+</mapper>

@@ -1,0 +1,44 @@
+.item {
+  display: flex;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+  
+.item .image {
+    padding: 14px 10px;
+}  
+.item .image div {
+      position: relative;
+      text-align: center;
+      font-size: 0.8em;
+}
+
+.item img {
+      border-radius: 50%;
+      height: 5em;
+      border: 0.35em solid grey; 
+      }
+  
+.details {
+    position: relative;
+    flex-grow: 1;
+}
+.details div {
+      border: 1px solid #232b50;
+      border-radius: 0.5em;
+      padding: 6px;
+	  margin: 9px;
+}      
+.details h1 {
+        color: #000;
+        font-size: 20px;
+        margin: 0;
+        padding: 0 0 12px 0;
+        letter-spacing: 1px;
+      }
+      
+.details p {
+        margin: 0;
+        padding: 0;
+        line-height: 150%;
+	}

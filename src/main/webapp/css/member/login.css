@@ -1,0 +1,14 @@
+.widthBtn {
+	width: 100%;
+	margin-bottom: 10px
+}
+
+.myForm {
+	margin: 100px auto;
+	width: 350px;
+}
+
+.loginError {
+	text-align: center;
+	color: red;
+}

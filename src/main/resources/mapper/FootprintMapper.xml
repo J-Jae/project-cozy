@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nts.cozy.dao.FootprintDao">
+	<resultMap id="Footprint" type="com.nts.cozy.vo.Footprint">
+		<id property="id" column="id" javaType="int" />
+		<result property="nickname" column="nickname" javaType="String" />
+		<result property="storeId" column="store_id" javaType="int" />
+		<result property="storeName" column="store_name" javaType="String" />
+		<result property="storeTag" column="keyword_tag" javaType="String" />
+		<result property="date" column="reg_date" javaType="Date" />
+	</resultMap>
+
+	<select id="selectFootprint" resultMap="Footprint">
+		SELECT
+			footprint.id
+			,footprint.nickname
+			,footprint.store_id
+			,footprint.reg_date
+			,store.store_name
+			,store.keyword_tag
+		FROM 
+			footprint
+		INNER JOIN 
+			store 
+		ON 
+			footprint.store_id = store.id
+		WHERE 
+			footprint.nickname = #{nickname}
+		ORDER BY 
+			footprint.reg_date DESC
+		LIMIT 
+			#{pageNo}, 10;
+	</select>
+
+	<select id="selectFootprintCount" resultType="int">
+		SELECT
+			COUNT(*) AS footprintCount
+		FROM 
+			footprint
+		WHERE 
+			nickname = #{nickname}
+	</select>
+
+	<insert id="insertFootprint">
+		INSERT INTO 
+			footprint (nickname, store_id)
+		VALUES 
+			(#{nickname}, #{storeId})
+	</insert>
+
+</mapper>
